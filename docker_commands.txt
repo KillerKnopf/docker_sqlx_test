@@ -1,0 +1,17 @@
+Command for building the docker image:
+	docker build -t docker-sqlx -f ./dockerfile .
+
+Command for running the container:
+	docker run --name sqlx-test --env-file ./.env docker-sqlx
+
+	--env-file because docker isn't copying the env file
+
+Command for deleting container:
+	docker rm sqlx-test
+
+Command for deleting image:
+	docker rmi docker-sqlx
+
+Combined delete:
+	docker rm sqlx-test
+	docker rmi docker-sqlx

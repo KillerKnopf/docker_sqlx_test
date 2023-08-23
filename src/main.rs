@@ -1,7 +1,7 @@
 use dotenv::dotenv;
 use sqlx::mysql::MySqlPoolOptions;
 use std::env;
-use tracing::Level;
+use tracing::{debug, Level};
 use tracing_subscriber::FmtSubscriber;
 
 pub mod db_stuff;
@@ -23,7 +23,10 @@ async fn main() {
     dotenv().ok();
 
     // initialize connection
+
     let dbms_url = env::var("DBMS_URL").expect("Did not find DBMS_URL in envs");
+    debug!("dbms_url --> {}", dbms_url);
+
     let pool = MySqlPoolOptions::new()
         .max_connections(1)
         .connect(&dbms_url)

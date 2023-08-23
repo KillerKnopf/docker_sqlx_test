@@ -1,0 +1,8 @@
+/target
+.gitignore
+readme.md
+docker_commands.txt
+
+# dockerfiles
+dockerfile
+dockerfile-v2
