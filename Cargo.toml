@@ -6,7 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-dotenv = "0.15.0"
 uuid = { version = "1.4.1", features = [
 	"v4",                # Lets you generate random UUIDs
 	"fast-rng",          # Use a faster (but still sufficiently random) RNG
@@ -21,13 +20,14 @@ sqlx = { version = "0.7.1", features = [
 	"uuid",
 	"chrono",
 ] }
-chrono = "0.4.26"
 clearscreen = "2.0.1"
 # Diagnostic information / logging
 tracing = "0.1.37"
 tracing-subscriber = "0.3.17"
 # Error report handler for panics. For colorful consistent panic logs
 color-eyre = "0.6.2"
+
+chrono = "0.4.26"
 
 # Use backtrace feature with optimized, pre-compiled code even in debug (basically release mode backtrace)
 [profile.dev.package.backtrace]

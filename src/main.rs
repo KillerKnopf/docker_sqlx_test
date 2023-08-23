@@ -1,4 +1,3 @@
-use dotenv::dotenv;
 use sqlx::mysql::MySqlPoolOptions;
 use std::env;
 use tracing::{debug, Level};
@@ -6,6 +5,7 @@ use tracing_subscriber::FmtSubscriber;
 
 pub mod db_stuff;
 pub mod ui;
+
 enum MainMenuAction {
     ListDatabases,
     CreateDatabase,
@@ -19,13 +19,9 @@ async fn main() {
     // setup logging crates
     initialize_logging(Level::DEBUG);
 
-    // load in .env file
-    dotenv().ok();
-
     // initialize connection
-
     let dbms_url = env::var("DBMS_URL").expect("Did not find DBMS_URL in envs");
-    debug!("dbms_url --> {}", dbms_url);
+    debug!("\n dbms_url --> {}\n", dbms_url);
 
     let pool = MySqlPoolOptions::new()
         .max_connections(1)

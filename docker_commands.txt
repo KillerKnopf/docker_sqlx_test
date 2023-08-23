@@ -2,9 +2,10 @@ Command for building the docker image:
 	docker build -t docker-sqlx -f ./dockerfile .
 
 Command for running the container:
-	docker run --name sqlx-test --env-file ./.env docker-sqlx
+	docker run -i --network my_test_network --name sqlx-test --env-file ./.env docker-sqlx
 
 	--env-file because docker isn't copying the env file
+	--network so that this programm can talk to database container on the same network
 
 Command for deleting container:
 	docker rm sqlx-test
@@ -15,3 +16,9 @@ Command for deleting image:
 Combined delete:
 	docker rm sqlx-test
 	docker rmi docker-sqlx
+
+For setting up mariadb database:
+	docker run -d -p 5000:3306 --network my_test_network --name test_db --env MARIADB_ROOT_PASSWORD=default_root_password --env MARIADB_USER=default_user --env MARIADB_PASSWORD=test_password_for_default_user mariadb:latest
+
+For Creating shared network:
+	docker network create -d bridge my_test_network
