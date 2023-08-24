@@ -1,5 +1,69 @@
+use std::env;
+
 use crate::ui::*;
-use sqlx::{MySql, Pool, Row};
+use sqlx::{mysql::MySqlPoolOptions, MySql, Pool, Row};
+use tracing::debug;
+
+struct ConnectionDetails {
+    user: String,
+    password: String,
+    ip: String,
+    database: Option<String>,
+}
+
+impl ConnectionDetails {
+    pub fn new(user: &str, password: &str, ip: &str, database: Option<&str>) -> Self {
+        ConnectionDetails {
+            user: user.to_string(),
+            password: password.to_string(),
+            ip: ip.to_string(),
+            database: database.map(str::to_string),
+        }
+    }
+
+    pub fn from_env() -> Self {
+        let user = env::var("DB_USER").expect("DB_USER not found in environment variables.");
+        let password = env::var("DB_USER_PASSWORD")
+            .expect("DB_USER_PASSWORD not found in environment variables.");
+        let ip = env::var("DB_ADDRESS").expect("DB_ADDRESS not found in environment variables");
+        let database: Option<String> = None;
+
+        ConnectionDetails {
+            user,
+            password,
+            ip,
+            database,
+        }
+    }
+}
+
+struct Connection {
+    details: ConnectionDetails,
+    pool: Pool<MySql>,
+}
+
+impl Connection {
+    pub async fn new(details: ConnectionDetails) -> Self {
+        let dbms_url = format!(
+            "mysql://{}:{}@{}/{}",
+            details.user,
+            details.password,
+            details.ip,
+            details.database.as_deref().unwrap_or("")
+        );
+        debug!("\n dbms_url --> {}\n", dbms_url);
+
+        let pool = MySqlPoolOptions::new()
+            .max_connections(1)
+            .connect(&dbms_url)
+            .await
+            .expect("Failed to establish first database connection.");
+
+        Connection { details, pool }
+    }
+
+    pub async fn switch_connection(&mut self) {}
+}
 
 pub async fn list_databases(pool: &Pool<MySql>) {
     let rows = sqlx::query("SHOW DATABASES;")
@@ -93,3 +157,8 @@ pub async fn delete_database(pool: &Pool<MySql>) {
         }
     }
 }
+
+// This function creates a new Connection to the database.
+// It takes an existing connection pool as the parameter.
+// The pool is not a reference so that this function takes ownership of the pool and can end the previous connection.
+pub fn establish_new_connection(pool: Pool<MySql>) {}
