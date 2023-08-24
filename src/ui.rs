@@ -9,7 +9,8 @@ pub fn write_main_menu() {
     println!("   [B] --> Create a new Database");
     println!("   [C] --> Delete a Database");
     println!("   [D] --> Connect to a database");
-    println!("   [E] --> Exit program");
+    println!("   [E] --> Reload main menu");
+    println!("   [F] --> Exit program");
     print!("\n     Please type in the letter corresponding to your choice --> ");
     flush();
 }

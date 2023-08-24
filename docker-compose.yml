@@ -1,0 +1,37 @@
+version: "3.7"
+name: cds
+
+services:
+    database:
+        image: mariadb:latest
+        volumes:
+            - db_data:/etc/data
+        environment:
+            MYSQL_ROOT_PASSWORD: default_root_password
+            MARIADB_USER: default_user
+            MARIADB_PASSWORD: test_password_for_default_user
+        networks:
+            - test-net
+
+    docker-sqlx:
+        build: .
+        stdin_open: true
+        volumes:
+            - sqlx_data:/etc/data
+        environment:
+            DB_USER: root
+            DB_PASSWORD: default_root_password
+            DB_ADDRESS: cds-database-1:3306
+        depends_on:
+            database:
+                condition: service_started
+                restart: true
+        networks:
+            - test-net
+
+networks:
+    test-net:
+
+volumes:
+    db_data:
+    sqlx_data:

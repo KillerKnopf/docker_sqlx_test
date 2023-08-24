@@ -23,8 +23,8 @@ impl ConnectionDetails {
 
     pub fn from_env() -> Self {
         let user = env::var("DB_USER").expect("DB_USER not found in environment variables.");
-        let password = env::var("DB_USER_PASSWORD")
-            .expect("DB_USER_PASSWORD not found in environment variables.");
+        let password =
+            env::var("DB_PASSWORD").expect("DB_PASSWORD not found in environment variables.");
         let ip = env::var("DB_ADDRESS").expect("DB_ADDRESS not found in environment variables");
         let database: Option<String> = None;
 

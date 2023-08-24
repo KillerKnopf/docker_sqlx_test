@@ -10,6 +10,7 @@ enum MainMenuAction {
     CreateDatabase,
     DeleteDatabase,
     ConnectToDatabase,
+    ReloadMainMenu,
     Exit,
 }
 
@@ -17,6 +18,9 @@ enum MainMenuAction {
 async fn main() {
     // setup logging crates
     initialize_logging(Level::DEBUG);
+
+    // Load .env file into environment variables
+    dotenvy::dotenv().ok();
 
     // initialize first connection
     let connection = db_stuff::Connection::new(db_stuff::ConnectionDetails::from_env()).await;
@@ -48,6 +52,11 @@ async fn main() {
                 println!("\n     Connecting to database:");
                 ui::pause_console();
             }
+            // This arm rewrites the main menu if problems arised
+            // This is the case for example when running the program in a docker container and attaching later
+            MainMenuAction::ReloadMainMenu => {
+                ui::write_main_menu();
+            }
             // This arm exists the program
             MainMenuAction::Exit => {
                 println!("\n\n Exiting CLI tool.\n Have a nice day.\n\n");
@@ -68,7 +77,8 @@ fn get_main_menu_action() -> MainMenuAction {
             "B" => return MainMenuAction::CreateDatabase,
             "C" => return MainMenuAction::DeleteDatabase,
             "D" => return MainMenuAction::ConnectToDatabase,
-            "E" => return MainMenuAction::Exit,
+            "E" => return MainMenuAction::ReloadMainMenu,
+            "F" => return MainMenuAction::Exit,
             _ => {
                 println!("       Unrecognized input. Please try again.\n       -----");
                 print!("     Please type in the letter corresponding to your choice --> ");

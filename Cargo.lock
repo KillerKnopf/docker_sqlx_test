@@ -319,6 +319,7 @@ dependencies = [
  "chrono",
  "clearscreen",
  "color-eyre",
+ "dotenvy",
  "sqlx",
  "tokio",
  "tracing",

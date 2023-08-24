@@ -22,3 +22,33 @@ For setting up mariadb database:
 
 For Creating shared network:
 	docker network create -d bridge my_test_network
+
+-----------------------
+Docker compose commands
+-----------------------
+
+First way
+---------
+
+	For creating containers:
+docker compose create
+
+	For starting database:
+docker start -d cds-database-1
+
+	For starting program:
+docker start -i cds-docker-sqlx-1
+
+Second way
+----------
+
+	For creating and starting containers:
+docker compose up -d
+	
+	For accessing console of program:
+docker attach cds-docker-sqlx-1
+	
+	If these command are entered seperately the main menu won't be drawn because the program has already reached the input line
+	This is circumvented if the commands are entered at the same time
+docker compose up -d
+docker attach cds-docker-sqlx-1
