@@ -1,6 +1,5 @@
-use sqlx::mysql::MySqlPoolOptions;
 use std::env;
-use tracing::{debug, Level};
+use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
 
 pub mod db_stuff;
@@ -19,15 +18,8 @@ async fn main() {
     // setup logging crates
     initialize_logging(Level::DEBUG);
 
-    // initialize connection
-    let dbms_url = env::var("DBMS_URL").expect("Did not find DBMS_URL in envs");
-    debug!("\n dbms_url --> {}\n", dbms_url);
-
-    let pool = MySqlPoolOptions::new()
-        .max_connections(1)
-        .connect(&dbms_url)
-        .await
-        .expect("Failed to establish database connection during program initialization.");
+    // initialize first connection
+    let connection = db_stuff::Connection::new(db_stuff::ConnectionDetails::from_env()).await;
 
     // programm loop
     loop {
@@ -41,15 +33,15 @@ async fn main() {
         match input {
             // This arm lists all databases
             MainMenuAction::ListDatabases => {
-                db_stuff::list_databases(&pool).await;
+                db_stuff::list_databases(&connection.pool).await;
             }
             // This arm creates a database
             MainMenuAction::CreateDatabase => {
-                db_stuff::create_database(&pool).await;
+                db_stuff::create_database(&connection.pool).await;
             }
             // This arm creates a database
             MainMenuAction::DeleteDatabase => {
-                db_stuff::delete_database(&pool).await;
+                db_stuff::delete_database(&connection.pool).await;
             }
             // This arm connects to a database
             MainMenuAction::ConnectToDatabase => {

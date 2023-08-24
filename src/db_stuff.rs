@@ -4,7 +4,7 @@ use crate::ui::*;
 use sqlx::{mysql::MySqlPoolOptions, MySql, Pool, Row};
 use tracing::debug;
 
-struct ConnectionDetails {
+pub struct ConnectionDetails {
     user: String,
     password: String,
     ip: String,
@@ -12,7 +12,7 @@ struct ConnectionDetails {
 }
 
 impl ConnectionDetails {
-    pub fn new(user: &str, password: &str, ip: &str, database: Option<&str>) -> Self {
+    pub fn new(&mut self, user: &str, password: &str, ip: &str, database: Option<&str>) -> Self {
         ConnectionDetails {
             user: user.to_string(),
             password: password.to_string(),
@@ -37,9 +37,9 @@ impl ConnectionDetails {
     }
 }
 
-struct Connection {
-    details: ConnectionDetails,
-    pool: Pool<MySql>,
+pub struct Connection {
+    pub details: ConnectionDetails,
+    pub pool: Pool<MySql>,
 }
 
 impl Connection {
@@ -51,7 +51,7 @@ impl Connection {
             details.ip,
             details.database.as_deref().unwrap_or("")
         );
-        debug!("\n dbms_url --> {}\n", dbms_url);
+        debug!("\n Created first dbms_url --> {}\n", dbms_url);
 
         let pool = MySqlPoolOptions::new()
             .max_connections(1)
@@ -62,7 +62,34 @@ impl Connection {
         Connection { details, pool }
     }
 
-    pub async fn switch_connection(&mut self) {}
+    pub async fn switch_connection(
+        &mut self,
+        user: &str,
+        password: &str,
+        ip: &str,
+        database: Option<&str>,
+    ) {
+        self.details.new(user, password, ip, database);
+
+        let dbms_url = format!(
+            "mysql://{}:{}@{}/{}",
+            self.details.user,
+            self.details.password,
+            self.details.ip,
+            self.details.database.as_deref().unwrap_or("")
+        );
+        debug!("\n Switched dbms_url --> {}\n", dbms_url);
+
+        self.pool.close().await;
+        debug!("\n Closed old connection");
+
+        self.pool = MySqlPoolOptions::new()
+            .max_connections(1)
+            .connect(&dbms_url)
+            .await
+            .expect("Failed to establish new database connection.");
+        debug!("\n Created new connection");
+    }
 }
 
 pub async fn list_databases(pool: &Pool<MySql>) {
@@ -157,8 +184,3 @@ pub async fn delete_database(pool: &Pool<MySql>) {
         }
     }
 }
-
-// This function creates a new Connection to the database.
-// It takes an existing connection pool as the parameter.
-// The pool is not a reference so that this function takes ownership of the pool and can end the previous connection.
-pub fn establish_new_connection(pool: Pool<MySql>) {}

@@ -43,9 +43,9 @@ This is a cli tool with which some database stuff can be done.
 
 ## TODO
 
-- [ ] Change connection building code to be changed at runtime
-  - [ ] Put default starting configuration into env
+- [ ] Using docker compose so that i don't have to inspect the datbase container for its ip every time it is started.
+- [x] Change connection building code to be changed at runtime
+  - [x] Put default starting configuration into env
   - [ ] Implement database connecting -> Changing connection string
   - [ ] Implement user switching -> Changing connection string
-- [ ] Using docker compose so that i don't have to inspect every time the database is started.
 - [ ] Implement useful stuff to do in a database. (e.g. Create Table, Crud, ...)
