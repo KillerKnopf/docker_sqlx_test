@@ -82,6 +82,10 @@ docker attach cds-docker-sqlx-1
 
 ## TODO
 
+- [ ] Comment the code
+	- [ ] Connection struct
+	- [ ] ConectionDetails struct
+	- [ ] ui module
 - [x] Using docker compose so that i don't have to inspect the datbase container for its ip every time it is started.
 - [x] Change connection building code to be changed at runtime
   - [x] Put default starting configuration into env
